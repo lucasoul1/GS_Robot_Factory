@@ -25,6 +25,9 @@ public class MainMenuController : MonoBehaviour
     [Header("Cena inicial")]
     [SerializeField] private string firstLevelScene = "FactoryLevel01";
     [SerializeField] private string secondLevelScene = "FactoryLevel02";
+    [SerializeField] private string thirdLevelScene = "FactoryLevel03";
+    [SerializeField] private string fourthLevelScene = "FactoryLevel04";
+    [SerializeField] private string fifthLevelScene = "FactoryLevel05";
 
     private int currentTutorialPage;
 
@@ -116,6 +119,30 @@ public class MainMenuController : MonoBehaviour
     public void PlayLevelTwo()
     {
         LoadLevel(secondLevelScene);
+    }
+
+    /// <summary>
+    /// Inicia a terceira fase quando ela está incluída nas cenas de build.
+    /// </summary>
+    public void PlayLevelThree()
+    {
+        LoadLevel(thirdLevelScene);
+    }
+
+    /// <summary>
+    /// Inicia a quarta fase quando ela está incluída nas cenas de build.
+    /// </summary>
+    public void PlayLevelFour()
+    {
+        LoadLevel(fourthLevelScene);
+    }
+
+    /// <summary>
+    /// Inicia a quinta fase quando ela está incluída nas cenas de build.
+    /// </summary>
+    public void PlayLevelFive()
+    {
+        LoadLevel(fifthLevelScene);
     }
 
     /// <summary>

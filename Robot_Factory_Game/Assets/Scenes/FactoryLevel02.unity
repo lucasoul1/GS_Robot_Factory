@@ -4302,6 +4302,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProductivityManager
   productivityGoal: 120
+  pointsMultiplier: 2
 --- !u!114 &970000007
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6482,7 +6483,7 @@ MonoBehaviour:
   winPanel: {fileID: 4367044}
   lostPanel: {fileID: 488771522}
   nextLevelButton: {fileID: 1840546784}
-  nextLevelScene: 
+  nextLevelScene: FactoryLevel03
   winProductivityText: {fileID: 117660730}
   winGoalText: {fileID: 1798561164}
   lostProductivityText: {fileID: 262294500}

@@ -8,6 +8,7 @@ using UnityEngine;
 public class ProductivityManager : MonoBehaviour
 {
     [SerializeField, Min(1)] private int productivityGoal = 100;
+    [SerializeField, Min(1)] private int pointsMultiplier = 1;
 
     private readonly List<ProcessingStation> connectedStations = new List<ProcessingStation>();
     private int currentProductivity;
@@ -49,7 +50,8 @@ public class ProductivityManager : MonoBehaviour
         if (itemData == null)
             return;
 
-        currentProductivity += Mathf.Max(0, itemData.ProductivityPoints);
+        int itemPoints = Mathf.Max(0, itemData.ProductivityPoints);
+        currentProductivity += itemPoints * pointsMultiplier;
         ProductivityChanged?.Invoke(currentProductivity, productivityGoal);
         Debug.Log($"Productivity: {currentProductivity} / {productivityGoal}.", this);
     }

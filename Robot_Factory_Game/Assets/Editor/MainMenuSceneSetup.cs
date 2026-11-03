@@ -15,6 +15,9 @@ public static class MainMenuSceneSetup
     private const string ScenePath = "Assets/Scenes/MainMenu.unity";
     private const string FirstLevelPath = "Assets/Scenes/FactoryLevel01.unity";
     private const string SecondLevelPath = "Assets/Scenes/FactoryLevel02.unity";
+    private const string ThirdLevelPath = "Assets/Scenes/FactoryLevel03.unity";
+    private const string FourthLevelPath = "Assets/Scenes/FactoryLevel04.unity";
+    private const string FifthLevelPath = "Assets/Scenes/FactoryLevel05.unity";
     private const string FontPath = "Assets/Art/Fonts/PressStart2P/PressStart2P-Regular.ttf";
     private const string RobotSpritePath = "Assets/Art/Sprites/Placeholders/RobotAnimations/Robot_Idle_Down.png";
     private const string ConveyorSpritePath = "Assets/Art/Sprites/Placeholders/Conveyor_Belt.png";
@@ -85,12 +88,15 @@ public static class MainMenuSceneSetup
         CreateText(phasePanel.transform, "Phase Selection Hint", "LEVEL 1 AVAILABLE", font, 5, Color.white, new Vector2(0f, 100f), new Vector2(520f, 18f));
         Button phaseOneButton = null;
         Button phaseTwoButton = null;
+        Button phaseThreeButton = null;
+        Button phaseFourButton = null;
+        Button phaseFiveButton = null;
         for (int phase = 1; phase <= 9; phase++)
         {
             int column = (phase - 1) % 3;
             int row = (phase - 1) / 3;
             Vector2 position = new Vector2(-174f + column * 174f, 42f - row * 64f);
-            bool available = phase == 1 || (phase == 2 && HasSecondLevel());
+            bool available = phase == 1 || (phase == 2 && HasSecondLevel()) || (phase == 3 && HasThirdLevel()) || (phase == 4 && HasFourthLevel()) || (phase == 5 && HasFifthLevel());
             string label = available ? $"LEVEL {phase:00}\nAVAILABLE" : $"LEVEL {phase:00}\nLOCKED";
             Button phaseButtonItem = CreateButton(
                 phasePanel.transform,
@@ -114,6 +120,12 @@ public static class MainMenuSceneSetup
                     phaseOneButton = phaseButtonItem;
                 else if (phase == 2)
                     phaseTwoButton = phaseButtonItem;
+                else if (phase == 3)
+                    phaseThreeButton = phaseButtonItem;
+                else if (phase == 4)
+                    phaseFourButton = phaseButtonItem;
+                else if (phase == 5)
+                    phaseFiveButton = phaseButtonItem;
             }
         }
         Button phaseBackButton = CreateButton(phasePanel.transform, "Phase Back Button", "BACK", font, ButtonColor, new Vector2(0f, -135f), new Vector2(180f, 32f), 6);
@@ -146,6 +158,9 @@ public static class MainMenuSceneSetup
         serializedController.FindProperty("fullscreenToggle").objectReferenceValue = fullscreenToggle;
         serializedController.FindProperty("firstLevelScene").stringValue = "FactoryLevel01";
         serializedController.FindProperty("secondLevelScene").stringValue = "FactoryLevel02";
+        serializedController.FindProperty("thirdLevelScene").stringValue = "FactoryLevel03";
+        serializedController.FindProperty("fourthLevelScene").stringValue = "FactoryLevel04";
+        serializedController.FindProperty("fifthLevelScene").stringValue = "FactoryLevel05";
         serializedController.ApplyModifiedPropertiesWithoutUndo();
 
         AddClick(playButton, controller.PlayLevelOne);
@@ -155,6 +170,9 @@ public static class MainMenuSceneSetup
         AddClick(quitButton, controller.QuitGame);
         AddClick(phaseOneButton, controller.PlayLevelOne);
         AddClick(phaseTwoButton, controller.PlayLevelTwo);
+        AddClick(phaseThreeButton, controller.PlayLevelThree);
+        AddClick(phaseFourButton, controller.PlayLevelFour);
+        AddClick(phaseFiveButton, controller.PlayLevelFive);
         AddClick(phaseBackButton, controller.ShowMainMenu);
         AddClick(optionsBackButton, controller.ShowMainMenu);
         AddClick(tutorialPageSet.previousButton, controller.PreviousTutorialPage);
@@ -201,17 +219,18 @@ public static class MainMenuSceneSetup
         if (phasePanel != null)
         {
             SetTextContent(phasePanel, "Phase Selection Title", "SELECT LEVEL");
-            SetTextContent(phasePanel, "Phase Selection Hint", HasSecondLevel()
-                ? "LEVELS 01-02 AVAILABLE"
-                : "LEVEL 01 AVAILABLE");
+            SetTextContent(phasePanel, "Phase Selection Hint", GetAvailableLevelsHint());
             for (int phase = 1; phase <= 9; phase++)
             {
-                bool available = phase == 1 || (phase == 2 && HasSecondLevel());
+                bool available = phase == 1 || (phase == 2 && HasSecondLevel()) || (phase == 3 && HasThirdLevel()) || (phase == 4 && HasFourthLevel()) || (phase == 5 && HasFifthLevel());
                 string label = available ? $"LEVEL {phase:00}\nAVAILABLE" : $"LEVEL {phase:00}\nLOCKED";
                 SetButtonLabel(phasePanel, $"Phase {phase:00} Button", label);
             }
 
             ConfigurePhaseTwoButton(phasePanel, controller);
+            ConfigurePhaseThreeButton(phasePanel, controller);
+            ConfigurePhaseFourButton(phasePanel, controller);
+            ConfigurePhaseFiveButton(phasePanel, controller);
 
             SetButtonLabel(phasePanel, "Phase Back Button", "BACK");
         }
@@ -293,8 +312,14 @@ public static class MainMenuSceneSetup
         }
 
         ConfigurePhaseTwoButton(phasePanel, controller);
+        ConfigurePhaseThreeButton(phasePanel, controller);
+        ConfigurePhaseFourButton(phasePanel, controller);
+        ConfigurePhaseFiveButton(phasePanel, controller);
         SerializedObject serializedController = new SerializedObject(controller);
         serializedController.FindProperty("secondLevelScene").stringValue = "FactoryLevel02";
+        serializedController.FindProperty("thirdLevelScene").stringValue = "FactoryLevel03";
+        serializedController.FindProperty("fourthLevelScene").stringValue = "FactoryLevel04";
+        serializedController.FindProperty("fifthLevelScene").stringValue = "FactoryLevel05";
         serializedController.ApplyModifiedPropertiesWithoutUndo();
         EditorUtility.SetDirty(controller);
         EditorSceneManager.MarkSceneDirty(scene);
@@ -360,18 +385,19 @@ public static class MainMenuSceneSetup
         CreateSmallIllustrationCard(pageTwo.transform, "Trash Card", "TRASH", trash, -170f, font);
         CreateSmallIllustrationCard(pageTwo.transform, "Warning Card", "WARNING", warning, 0f, font);
         CreateSmallIllustrationCard(pageTwo.transform, "Critical Card", "CRITICAL", critical, 170f, font);
-        CreateText(pageTwo.transform, "Result Instructions",
-            "Correct station: +10 PRODUCTIVITY. Wrong items are rejected.\n\nTRASH BIN: discard any item for no points. Ignored alerts reduce PENALTY.\n\nPENALTY at 0 = immediate defeat. At time 0, the target decides the result.",
-            font, 6, Color.white, new Vector2(0f, -94f), new Vector2(500f, 64f), TextAnchor.MiddleLeft);
+        Text resultInstructions = CreateText(pageTwo.transform, "Result Instructions",
+            "Correct station: +10 or +20 PRODUCTIVITY,\ndepending on the level. Wrong items are rejected.\n\nTRASH BIN: any item can be discarded for no points.\nIgnored alerts reduce PENALTY.\n\nPENALTY at 0 = immediate defeat.\nAt time 0, the target decides the result.",
+            font, 6, Color.white, new Vector2(0f, -92f), new Vector2(500f, 76f), TextAnchor.MiddleLeft);
+        resultInstructions.lineSpacing = 1.4f;
 
         Text pageIndicator = CreateText(parent, "Tutorial Page Indicator", "1 / 2", font, 6, Color.white,
             new Vector2(230f, 126f), new Vector2(70f, 20f));
         Button previousButton = CreateButton(parent, "Tutorial Previous Button", "< PREVIOUS", font, ButtonColor,
-            new Vector2(-170f, -145f), new Vector2(150f, 30f), 6);
+            new Vector2(-170f, -150f), new Vector2(150f, 30f), 6);
         Button backButton = CreateButton(parent, "Tutorial Back Button", "BACK", font, ButtonColor,
-            new Vector2(0f, -145f), new Vector2(130f, 30f), 6);
+            new Vector2(0f, -150f), new Vector2(130f, 30f), 6);
         Button nextButton = CreateButton(parent, "Tutorial Next Button", "NEXT >", font, ButtonColor,
-            new Vector2(170f, -145f), new Vector2(150f, 30f), 6);
+            new Vector2(170f, -150f), new Vector2(150f, 30f), 6);
 
         pageTwo.SetActive(false);
         previousButton.interactable = false;
@@ -504,6 +530,34 @@ public static class MainMenuSceneSetup
         return AssetDatabase.LoadAssetAtPath<SceneAsset>(SecondLevelPath) != null;
     }
 
+    private static bool HasThirdLevel()
+    {
+        return AssetDatabase.LoadAssetAtPath<SceneAsset>(ThirdLevelPath) != null;
+    }
+
+    private static bool HasFourthLevel()
+    {
+        return AssetDatabase.LoadAssetAtPath<SceneAsset>(FourthLevelPath) != null;
+    }
+
+    private static bool HasFifthLevel()
+    {
+        return AssetDatabase.LoadAssetAtPath<SceneAsset>(FifthLevelPath) != null;
+    }
+
+    private static string GetAvailableLevelsHint()
+    {
+        if (HasFifthLevel())
+            return "LEVELS 01-05 AVAILABLE";
+        if (HasFourthLevel())
+            return "LEVELS 01-04 AVAILABLE";
+        if (HasThirdLevel())
+            return "LEVELS 01-03 AVAILABLE";
+        if (HasSecondLevel())
+            return "LEVELS 01-02 AVAILABLE";
+        return "LEVEL 01 AVAILABLE";
+    }
+
     private static void ConfigurePhaseTwoButton(Transform phasePanel, MainMenuController controller)
     {
         Transform buttonTransform = phasePanel.Find("Phase 02 Button");
@@ -528,6 +582,78 @@ public static class MainMenuSceneSetup
         ClearClickEvents(button);
         if (available && controller != null)
             AddClick(button, controller.PlayLevelTwo);
+    }
+
+    private static void ConfigurePhaseThreeButton(Transform phasePanel, MainMenuController controller)
+    {
+        Transform buttonTransform = phasePanel.Find("Phase 03 Button");
+        Button button = buttonTransform != null ? buttonTransform.GetComponent<Button>() : null;
+        if (button == null)
+            return;
+
+        bool available = HasThirdLevel();
+        button.interactable = available;
+        Image buttonImage = button.GetComponent<Image>();
+        Text label = button.GetComponentInChildren<Text>();
+        if (buttonImage != null)
+            buttonImage.color = available ? ButtonColor : new Color(0.1f, 0.13f, 0.15f, 1f);
+        if (label != null)
+            label.color = available ? Color.white : MutedColor;
+
+        SetButtonLabel(phasePanel, "Phase 03 Button", available ? "LEVEL 03\nAVAILABLE" : "LEVEL 03\nLOCKED");
+        SetTextContent(phasePanel, "Phase Selection Hint", GetAvailableLevelsHint());
+
+        ClearClickEvents(button);
+        if (available && controller != null)
+            AddClick(button, controller.PlayLevelThree);
+    }
+
+    private static void ConfigurePhaseFourButton(Transform phasePanel, MainMenuController controller)
+    {
+        Transform buttonTransform = phasePanel.Find("Phase 04 Button");
+        Button button = buttonTransform != null ? buttonTransform.GetComponent<Button>() : null;
+        if (button == null)
+            return;
+
+        bool available = HasFourthLevel();
+        button.interactable = available;
+        Image buttonImage = button.GetComponent<Image>();
+        Text label = button.GetComponentInChildren<Text>();
+        if (buttonImage != null)
+            buttonImage.color = available ? ButtonColor : new Color(0.1f, 0.13f, 0.15f, 1f);
+        if (label != null)
+            label.color = available ? Color.white : MutedColor;
+
+        SetButtonLabel(phasePanel, "Phase 04 Button", available ? "LEVEL 04\nAVAILABLE" : "LEVEL 04\nLOCKED");
+        SetTextContent(phasePanel, "Phase Selection Hint", GetAvailableLevelsHint());
+
+        ClearClickEvents(button);
+        if (available && controller != null)
+            AddClick(button, controller.PlayLevelFour);
+    }
+
+    private static void ConfigurePhaseFiveButton(Transform phasePanel, MainMenuController controller)
+    {
+        Transform buttonTransform = phasePanel.Find("Phase 05 Button");
+        Button button = buttonTransform != null ? buttonTransform.GetComponent<Button>() : null;
+        if (button == null)
+            return;
+
+        bool available = HasFifthLevel();
+        button.interactable = available;
+        Image buttonImage = button.GetComponent<Image>();
+        Text label = button.GetComponentInChildren<Text>();
+        if (buttonImage != null)
+            buttonImage.color = available ? ButtonColor : new Color(0.1f, 0.13f, 0.15f, 1f);
+        if (label != null)
+            label.color = available ? Color.white : MutedColor;
+
+        SetButtonLabel(phasePanel, "Phase 05 Button", available ? "LEVEL 05\nAVAILABLE" : "LEVEL 05\nLOCKED");
+        SetTextContent(phasePanel, "Phase Selection Hint", GetAvailableLevelsHint());
+
+        ClearClickEvents(button);
+        if (available && controller != null)
+            AddClick(button, controller.PlayLevelFive);
     }
 
     private static void SetTextContent(Transform parent, string textName, string content)
@@ -782,6 +908,12 @@ public static class MainMenuSceneSetup
             scenePaths.Add(FirstLevelPath);
         if (HasSecondLevel() && !scenePaths.Contains(SecondLevelPath))
             scenePaths.Add(SecondLevelPath);
+        if (HasThirdLevel() && !scenePaths.Contains(ThirdLevelPath))
+            scenePaths.Add(ThirdLevelPath);
+        if (HasFourthLevel() && !scenePaths.Contains(FourthLevelPath))
+            scenePaths.Add(FourthLevelPath);
+        if (HasFifthLevel() && !scenePaths.Contains(FifthLevelPath))
+            scenePaths.Add(FifthLevelPath);
 
         EditorBuildSettings.scenes = scenePaths
             .ConvertAll(path => new EditorBuildSettingsScene(path, true))

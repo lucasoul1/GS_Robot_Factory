@@ -4239,6 +4239,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProductivityManager
   productivityGoal: 100
+  pointsMultiplier: 2
 --- !u!114 &970000007
 MonoBehaviour:
   m_ObjectHideFlags: 0
