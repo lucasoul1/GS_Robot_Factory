@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -11,6 +12,7 @@ public class RobotCarry : MonoBehaviour
 
     public bool IsCarryingItem => carriedItem != null;
     public ItemData CarriedItemData => carriedItem != null ? carriedItem.Data : null;
+    public event Action<ItemData> ItemCollected;
 
     private void Awake()
     {
@@ -35,6 +37,7 @@ public class RobotCarry : MonoBehaviour
         carriedItem = item;
         carriedItemRenderer.sprite = item.Data.ItemSprite;
         carriedItemRenderer.enabled = true;
+        ItemCollected?.Invoke(item.Data);
         return true;
     }
 

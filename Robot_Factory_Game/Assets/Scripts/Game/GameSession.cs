@@ -22,6 +22,7 @@ public class GameSession : MonoBehaviour
 
     public GameState State { get; private set; } = GameState.Playing;
     public float RemainingTime => remainingTime;
+    public float TimeLimit => timeLimit;
     public event Action<GameState, int, int> SessionFinished;
 
     private void Awake()

@@ -156,6 +156,7 @@ public static class PauseMenuSceneSetup
         SetCenteredRect(sliderObject.GetComponent<RectTransform>(), position, size);
 
         GameObject track = CreateImage(sliderObject.transform, "Track", new Color(0.025f, 0.04f, 0.05f, 1f), Vector2.zero, size);
+        track.GetComponent<Image>().raycastTarget = true;
         GameObject fillArea = new GameObject("Fill Area", typeof(RectTransform));
         fillArea.transform.SetParent(sliderObject.transform, false);
         RectTransform fillAreaRect = fillArea.GetComponent<RectTransform>();
@@ -165,6 +166,7 @@ public static class PauseMenuSceneSetup
         fillAreaRect.offsetMax = new Vector2(-3f, 0f);
 
         GameObject fill = CreateImage(fillArea.transform, "Fill", AccentColor, Vector2.zero, Vector2.zero);
+        fill.GetComponent<Image>().raycastTarget = true;
         RectTransform fillRect = fill.GetComponent<RectTransform>();
         fillRect.anchorMin = Vector2.zero;
         fillRect.anchorMax = Vector2.one;
@@ -180,6 +182,7 @@ public static class PauseMenuSceneSetup
         handleAreaRect.offsetMax = new Vector2(-4f, 0f);
 
         GameObject handle = CreateImage(handleArea.transform, "Handle", Color.white, Vector2.zero, new Vector2(12f, 18f));
+        handle.GetComponent<Image>().raycastTarget = true;
         Slider slider = sliderObject.GetComponent<Slider>();
         slider.minValue = 0f;
         slider.maxValue = 1f;
